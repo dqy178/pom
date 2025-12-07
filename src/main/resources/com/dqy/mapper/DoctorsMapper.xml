@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.dqy.mapper.DoctorsMapper">
+
+
+    <!-- 根据编号查询员工信息
+        如果参数仅有一个,则#{名}参数名没有要求
+    -->
+    <resultMap id="DoctorMap" type="com.dqy.pojo.Doctors" autoMapping="true">
+<!--        关联科室信息-->
+        <association property="departments" javaType="com.dqy.pojo.Departments" autoMapping="true"/>
+<!--       关联职称信息-->
+        <association property="titles" javaType="com.dqy.pojo.Titles" autoMapping="true"/>
+    </resultMap>
+    <select id="selectDoctorByname" resultMap="DoctorMap">
+        select * from doctors where job_number = #{username}
+    </select>
+    <select id="selectDoctorByid" resultMap="DoctorMap">
+        select *
+        from doctors doc,
+             departments dep,
+             professional_titles pt
+        where doc.doctor_id = #{id}
+          and doc.department_id = dep.department_id
+          and doc.professional_title_id = pt.id
+    </select>
+    <update id="EditInfoByid">
+        update doctors
+        set phone        = #{phone},
+            email        = #{email},
+            introduction = #{introduction}
+        where doctor_id = #{id};
+    </update>
+    <update id="updatePasswdById">
+        update doctors
+        set password = #{passwd}
+        where doctor_id = #{id}
+    </update>
+
+<!--    多条件查询医生信息
+        使用动态SQL添加条件-->
+    <select id="selectDoctorAll" resultMap="DoctorMap">
+        select d.*,dt.*,pt.* from doctors d left join departments dt on d.department_id = dt.department_id
+                                            left join professional_titles pt on d.professional_title_id = pt.id
+        <where>
+            <if test="departmentId!= null">
+            d.department_id = #{departmentId}
+            </if>
+            <if test="titleId!= null">
+            and d.professional_title_id = #{titleId}
+            </if>
+            <if test="doctorName!= null">
+            and d.name like concat('%',#{doctorName},'%')
+            </if>
+            <if test="jobNumber!= null">
+            and d.job_number like concat('%',#{jobNumber},'%')
+            </if>
+        </where>
+        order by d.doctor_id
+    </select>
+
+<!--    添加医生-->
+    <insert id="addDoctor" parameterType="com.dqy.pojo.Doctors">
+        insert into doctors(job_number,password,name,avatar,phone,email,introduction,registration_fee,entry_date,department_id,professional_title_id,state)
+        values(#{jobNumber},'123456',#{name},#{avatar},#{phone},#{email},#{introduction},#{registrationFee},now(),#{departmentId},#{professionalTitleId},0)
+    </insert>
+
+    <select id="selectDoctor" resultType="com.dqy.pojo.Doctors">
+        select * from doctors where job_number = #{jobNumber}
+    </select>
+
+    <delete id="delDoctor">
+        delete from doctors where doctor_id = #{doctorId}
+    </delete>
+
+</mapper>

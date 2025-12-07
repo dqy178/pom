@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.dqy.mapper.AnnouncementMapper">
+
+
+    <select id="selectAll" resultType="com.dqy.pojo.Announcement">
+        select * from announcement
+    </select>
+
+    <insert id="addAnnouncement" keyProperty="announcementId" useGeneratedKeys="true">
+        insert into announcement (announcement_id,title, content, creation_time,creator)
+        values(#{announcementId},#{title}, #{content}, #{creationTime},#{creator} )
+    </insert>
+
+    <delete id="delAnnouncementByNo">
+        delete from announcement where announcement_id = #{announcementId}
+    </delete>
+
+    <select id="selectAnnouncementByNo" resultType="com.dqy.pojo.Announcement">
+        select * from announcement where announcement_id = #{announcementId}
+    </select>
+
+
+
+</mapper>

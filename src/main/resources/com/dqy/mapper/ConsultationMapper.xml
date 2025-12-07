@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dqy.mapper.ConsultationMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ConsultationWithPatientResultMap" type="com.dqy.pojo.Consultation">
+        <id property="consultationId" column="consultation_id"/>
+        <result property="patientId" column="patient_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="consultationTime" column="consultation_time"/>
+        <result property="isHospitalRegistered" column="is_hospital_registered"/>
+        <result property="isHospitalized" column="is_hospitalized"/>
+        <result property="medicalAdviceCase" column="medical_advice_case"/>
+        <association property="patient" javaType="com.dqy.pojo.Patients">
+            <id property="patientId" column="patient_id"/>
+            <result property="pname" column="pname"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询就诊记录，带患者姓名，支持多条件（doctorId、startDate、endDate） -->
+    <select id="findConsultationsWithPatientInfoByConditions" parameterType="com.dqy.vo.AppointmentSearchVO" resultMap="ConsultationWithPatientResultMap">
+        SELECT c.consultation_id, c.patient_id, c.doctor_id, c.consultation_time,
+        c.is_hospital_registered, c.is_hospitalized, c.medical_advice_case,
+        p.pname
+        FROM consultation c
+        LEFT JOIN patients p ON c.patient_id = p.patient_id
+        <where>
+            <if test="vo.doctorId != null">
+                AND c.doctor_id = #{vo.doctorId}
+            </if>
+            <if test="vo.startDate != null and vo.endDate != null">
+                AND c.consultation_time BETWEEN #{vo.startDate} AND #{vo.endDate}
+            </if>
+        </where>
+    </select>
+
+</mapper>

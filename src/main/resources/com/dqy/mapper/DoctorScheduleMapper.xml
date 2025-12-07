@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.dqy.mapper.DoctorScheduleMapper">
+
+<resultMap id="DocScheduleMap" type="com.dqy.pojo.DoctorSchedule">
+    <id column="schedule_id" property="scheduleId"/>
+    <result column="doctor_id" property="doctorId"/>
+    <result column="date" property="date"/>
+    <result column="shift_time" property="shiftTime"/>
+    <result column="department_id" property="departmentId"/>
+    <result column="is_available" property="isAvailable"/>
+    <result column="visit_count" property="visitCount"/>
+    <result column="sum_count" property="sumCount"/>
+</resultMap>
+
+<select id="selectAllScheduleByDocId" resultMap="DocScheduleMap">
+    select * from doctor_schedule where doctor_id = #{id}
+</select>
+
+
+</mapper>

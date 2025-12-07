@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dqy.mapper.PrescriptionMapper">
+    <insert id="insertPrescription" parameterType="com.dqy.pojo.Prescription">
+        INSERT INTO prescription (user_id, doctor_id, appointment_id, content, total_amount, status, create_time)
+        VALUES (#{userId}, #{doctorId}, #{appointmentId}, #{content}, #{totalAmount}, #{status}, NOW())
+    </insert>
+
+    <select id="selectByUserId" parameterType="int" resultType="com.dqy.pojo.Prescription">
+        SELECT * FROM prescription WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.dqy.pojo.Prescription">
+        SELECT * FROM prescription WHERE id = #{id}
+    </select>
+
+    <update id="updatePrescription" parameterType="com.dqy.pojo.Prescription">
+        UPDATE prescription SET
+            doctor_id = #{doctorId},
+            appointment_id = #{appointmentId},
+            content = #{content},
+            total_amount = #{totalAmount},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deletePrescription" parameterType="int">
+        DELETE FROM prescription WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultType="com.dqy.pojo.Prescription">
+        SELECT * FROM prescription
+    </select>
+    
+    <update id="updatePrescriptionStatus">
+        UPDATE prescription SET status = #{status} WHERE id = #{id}
+    </update>
+</mapper> 

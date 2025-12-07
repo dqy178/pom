@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.dqy.mapper.ScheduleMapper">
+
+    <!--  根据科室id和日期获取排班信息 -->
+    <select id="selectScheduleList" resultType="com.dqy.pojo.Schedule">
+        select s.*, d.name as doctorName
+        from doctor_schedule s
+        left join doctors d on s.doctor_id = d.doctor_id
+        <where>
+            <if test="departmentId != null"> and s.department_id = #{departmentId} </if>
+            <if test="date != null"> and s.date = #{date} </if>
+        </where>
+        order by s.date desc, s.shift_time
+    </select>
+
+    <!--  添加排班信息 -->
+    <insert id="addSchedule" parameterType="com.dqy.pojo.Schedule">
+        insert into doctor_schedule(doctor_id, date, shift_time, department_id, is_available, visit_count, sum_count, remarks)
+        values(#{doctorId}, #{date}, #{shiftTime}, #{departmentId}, #{isAvailable}, #{visitCount}, #{sumCount}, #{remarks})
+    </insert>
+
+    <!--  更新排班信息 -->
+    <update id="updateSchedule" parameterType="com.dqy.pojo.Schedule">
+        update doctor_schedule set doctor_id=#{doctorId},date=#{date},shift_time=#{shiftTime},department_id=#{departmentId},is_available=#{isAvailable},visit_count=#{visitCount},sum_count=#{sumCount},remarks=#{remarks}
+        where schedule_id = #{scheduleId}
+    </update>
+    
+    <!--  删除排班信息 -->
+    <delete id="deleteSchedule">
+        delete from doctor_schedule where schedule_id = #{scheduleId}
+    </delete>
+    
+    <!--  根据排班id获取排班信息 -->
+    <select id="getScheduleById" resultType="com.dqy.pojo.Schedule">
+        select s.*, d.name as doctorName 
+        from doctor_schedule s
+        left join doctors d on s.doctor_id = d.doctor_id
+        where s.schedule_id = #{scheduleId}
+    </select>
+</mapper>

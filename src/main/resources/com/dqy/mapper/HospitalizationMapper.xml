@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.dqy.mapper.HospitalizationMapper">
+
+
+   
+
+    <!--    多条件查询医生信息
+            使用动态SQL添加条件-->
+    <!--
+    <select id="selectHospitalizationAll" resultMap="HospitalizationMap">
+        select h.*,p.* from hospitalization h left join patients p on h.patient_id = p.patient_id
+        <where>
+            <if test="paymentStatus!= null">
+                and h.payment_status = #{paymentStatus}
+            </if>
+            <if test="patientId!= null">
+                and h.patient_id = #{patientId}
+            </if>
+            <if test="patientName!= null">
+                and p.pname like concat('%',#{pname},'%')
+            </if>
+
+        </where>
+        order by h.hospitalization_id
+    </select>
+    -->
+
+    <select id="selectHospitalization" resultType="com.dqy.pojo.Hospitalization">
+        select * from hospitalization where patient_id = #{patientId}
+    </select>
+
+    <delete id="delHospitalization">
+        delete from hospitalization where hospitalization_id = #{hospitalizationId}
+    </delete>
+    <insert id="insertHospitalization" parameterType="com.dqy.pojo.Hospitalization">
+        INSERT INTO hospitalization (user_id, doctor_id, admission_time, discharge_time, room_no, total_amount, status, create_time)
+        VALUES (#{userId}, #{doctorId}, #{admissionTime}, #{dischargeTime}, #{roomNo}, #{totalAmount}, #{status}, NOW())
+    </insert>
+
+    <select id="selectByUserId" parameterType="int" resultType="com.dqy.pojo.Hospitalization">
+        SELECT * FROM hospitalization WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.dqy.pojo.Hospitalization">
+        SELECT * FROM hospitalization WHERE id = #{id}
+    </select>
+
+    <update id="updateHospitalization" parameterType="com.dqy.pojo.Hospitalization">
+        UPDATE hospitalization SET
+                                   doctor_id = #{doctorId},
+                                   admission_time = #{admissionTime},
+                                   discharge_time = #{dischargeTime},
+                                   room_no = #{roomNo},
+                                   total_amount = #{totalAmount},
+                                   status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteHospitalization" parameterType="int">
+        DELETE FROM hospitalization WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultType="com.dqy.pojo.Hospitalization">
+        SELECT * FROM hospitalization
+    </select>
+
+    <update id="updateHospitalizationStatus">
+        UPDATE hospitalization SET status = #{status} WHERE id = #{id}
+    </update>
+</mapper>

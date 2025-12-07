@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dqy.mapper.DocAppointmentMapper">
+    <!-- 结果映射，仅包含指定字段 -->
+    <resultMap id="AppointmentWithPatientInfoResultMap" type="com.dqy.pojo.Appointments">
+        <id property="appointmentId" column="appointment_id"/>
+        <result property="patientId" column="patient_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="appointmentDate" column="appointment_date" />
+        <result property="appointmentTime" column="appointment_time"/>
+        <result property="status" column="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result property="createTime" column="createtime" javaType="java.util.Date"/>
+        <association property="patient" javaType="com.dqy.pojo.Patients">
+            <id property="patientId" column="patient_id"/>
+            <result property="pname" column="pname"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询预约记录，带患者姓名，支持多条件（doctorId、startDate、endDate） -->
+    <select id="findAppointmentsWithPatientInfoByDoctorId" parameterType="com.dqy.vo.AppointmentSearchVO" resultMap="AppointmentWithPatientInfoResultMap">
+        SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.createtime,
+        p.pname AS pname
+        FROM appointments a
+        LEFT JOIN patients p ON a.patient_id = p.patient_id
+        <where>
+            <if test="vo.doctorId != null">
+                AND a.doctor_id = #{vo.doctorId}
+            </if>
+            <if test="vo.startDate != null and vo.endDate != null">
+                AND a.appointment_date BETWEEN #{vo.startDate} AND #{vo.endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新指定预约记录的状态为 completed -->
+    <update id="updateAppointmentStatusToCompleted">
+        UPDATE appointments
+        SET status = 'completed'
+        WHERE appointment_id = #{appointmentId}
+    </update>
+
+    <select id="findPatientById" parameterType="java.lang.Integer" resultType="com.dqy.pojo.Patients">
+        SELECT patient_id, pname, id_card_number
+        FROM patients
+        WHERE patient_id = #{patientId}
+    </select>
+    <!-- 插入 hospitalization 表新记录 -->
+    <insert id="insertHospitalization" parameterType="com.dqy.pojo.Hospitalization">
+        INSERT INTO hospitalizations (
+            patient_id,
+            room_number,
+            cost,
+            payment_status,
+            is_insured,
+            hospitalization_status
+        ) VALUES (
+                     #{patientId},
+                     #{roomNumber},
+                     #{cost},
+                     #{paymentStatus},
+                     #{isInsured},
+                     #{hospitalizationStatus}
+                 )
+    </insert>
+    <!-- 通过 appointment_id 查询 doctor_id 和 patient_id -->
+    <select id="findDoctorAndPatientByAppointmentId" parameterType="java.lang.Integer" resultType="com.dqy.pojo.Appointments">
+        SELECT appointment_id, patient_id, doctor_id
+        FROM appointments
+        WHERE appointment_id = #{appointmentId}
+    </select>
+
+    <insert id="insertConsultation" parameterType="com.dqy.pojo.Consultation">
+        INSERT INTO consultation (
+
+            patient_id,
+            doctor_id,
+            consultation_time,
+            is_hospital_registered,
+            is_hospitalized,
+            medical_advice_case
+        ) VALUES (
+
+                     #{patientId},
+                     #{doctorId},
+                     #{consultationTime},
+                     #{isHospitalRegistered},
+                     #{isHospitalized},
+                     #{medicalAdviceCase}
+                 )
+    </insert>
+</mapper>

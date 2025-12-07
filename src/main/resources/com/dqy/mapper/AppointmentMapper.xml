@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dqy.mapper.AppointmentMapper">
+    <insert id="insertAppointment" parameterType="com.dqy.pojo.Appointment">
+        INSERT INTO appointment (user_id, department_id, doctor_id, appointment_time, status, create_time)
+        VALUES (#{userId}, #{departmentId}, #{doctorId}, #{appointmentTime}, #{status}, NOW())
+    </insert>
+
+    <select id="selectByUserId" parameterType="int" resultType="com.dqy.pojo.Appointment">
+        SELECT * FROM appointment WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.dqy.pojo.Appointment">
+        SELECT * FROM appointment WHERE id = #{id}
+    </select>
+
+    <update id="updateAppointment" parameterType="com.dqy.pojo.Appointment">
+        UPDATE appointment SET
+            department_id = #{departmentId},
+            doctor_id = #{doctorId},
+            appointment_time = #{appointmentTime},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteAppointment" parameterType="int">
+        DELETE FROM appointment WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultType="com.dqy.pojo.Appointment">
+        SELECT * FROM appointment
+    </select>
+</mapper> 
